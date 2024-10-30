@@ -428,7 +428,7 @@ namespace nvrhi::vulkan
         if (!m_Queues[uint32_t(params.queueType)])
             return nullptr;
 
-        CommandList* cmdList = new CommandList(this, m_Context, params);
+        CommandList* cmdList = new CommandList(this, m_Context, params, vk::CommandBufferLevel::ePrimary);
 
         return CommandListHandle::Create(cmdList);
     }

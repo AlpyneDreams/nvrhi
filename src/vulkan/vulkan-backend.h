@@ -241,9 +241,9 @@ namespace nvrhi::vulkan
         ~Queue();
 
         // creates a command buffer and its synchronization resources
-        TrackedCommandBufferPtr createCommandBuffer();
+        TrackedCommandBufferPtr createCommandBuffer(vk::CommandBufferLevel level);
 
-        TrackedCommandBufferPtr getOrCreateCommandBuffer();
+        TrackedCommandBufferPtr getOrCreateCommandBuffer(vk::CommandBufferLevel level);
 
         void addWaitSemaphore(vk::Semaphore semaphore, uint64_t value);
         void addSignalSemaphore(vk::Semaphore semaphore, uint64_t value);
@@ -287,6 +287,7 @@ namespace nvrhi::vulkan
         // tracks the list of command buffers in flight on this queue
         std::list<TrackedCommandBufferPtr> m_CommandBuffersInFlight;
         std::list<TrackedCommandBufferPtr> m_CommandBuffersPool;
+        std::list<TrackedCommandBufferPtr> m_SecondaryCommandBuffersPool;
     };
 
     class MemoryResource
@@ -1179,7 +1180,7 @@ namespace nvrhi::vulkan
     public:
         // Internal backend methods
 
-        CommandList(Device* device, const VulkanContext& context, const CommandListParameters& parameters);
+        CommandList(Device* device, const VulkanContext& context, const CommandListParameters& parameters, vk::CommandBufferLevel level);
         ~CommandList() override;
 
         void executed(Queue& queue, uint64_t submissionID);
@@ -1270,6 +1271,7 @@ namespace nvrhi::vulkan
         const VulkanContext& m_Context;
 
         CommandListParameters m_CommandListParameters;
+        vk::CommandBufferLevel m_Level;
 
         CommandListResourceStateTracker m_StateTracker;
         bool m_EnableAutomaticBarriers = true;

@@ -52,7 +52,7 @@ namespace nvrhi::vulkan
         trackingSemaphore = vk::Semaphore();
     }
 
-    TrackedCommandBufferPtr Queue::createCommandBuffer()
+    TrackedCommandBufferPtr Queue::createCommandBuffer(vk::CommandBufferLevel level)
     {
         vk::Result res;
 
@@ -68,7 +68,7 @@ namespace nvrhi::vulkan
         
         // allocate command buffer
         auto allocInfo = vk::CommandBufferAllocateInfo()
-                            .setLevel(vk::CommandBufferLevel::ePrimary)
+                            .setLevel(level)
                             .setCommandPool(ret->cmdPool)
                             .setCommandBufferCount(1);
 
@@ -78,21 +78,25 @@ namespace nvrhi::vulkan
         return ret;
     }
 
-    TrackedCommandBufferPtr Queue::getOrCreateCommandBuffer()
+    TrackedCommandBufferPtr Queue::getOrCreateCommandBuffer(vk::CommandBufferLevel level = vk::CommandBufferLevel::ePrimary)
     {
         std::lock_guard lockGuard(m_Mutex); // this is called from CommandList::open, so free-threaded
 
         uint64_t recordingID = ++m_LastRecordingID;
 
+        auto& pool = level == vk::CommandBufferLevel::eSecondary
+			? m_SecondaryCommandBuffersPool
+			: m_CommandBuffersPool;
+
         TrackedCommandBufferPtr cmdBuf;
-        if (m_CommandBuffersPool.empty())
+        if (pool.empty())
         {
-            cmdBuf = createCommandBuffer();
+            cmdBuf = createCommandBuffer(level);
         }
         else
         {
-            cmdBuf = m_CommandBuffersPool.front();
-            m_CommandBuffersPool.pop_front();
+            cmdBuf = pool.front();
+            pool.pop_front();
         }
 
         cmdBuf->recordingID = recordingID;

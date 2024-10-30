@@ -25,10 +25,11 @@
 namespace nvrhi::vulkan
 {
 
-    CommandList::CommandList(Device* device, const VulkanContext& context, const CommandListParameters& parameters)
+    CommandList::CommandList(Device* device, const VulkanContext& context, const CommandListParameters& parameters, vk::CommandBufferLevel level)
         : m_Device(device)
         , m_Context(context)
         , m_CommandListParameters(parameters)
+		, m_Level(level)
         , m_StateTracker(context.messageCallback)
         , m_UploadManager(std::make_unique<UploadManager>(device, parameters.uploadChunkSize, 0, false))
         , m_ScratchManager(std::make_unique<UploadManager>(device, parameters.scratchChunkSize, parameters.scratchMaxMemory, true))
@@ -60,7 +61,7 @@ namespace nvrhi::vulkan
 
     void CommandList::open()
     {
-        m_CurrentCmdBuf = m_Device->getQueue(m_CommandListParameters.queueType)->getOrCreateCommandBuffer();
+        m_CurrentCmdBuf = m_Device->getQueue(m_CommandListParameters.queueType)->getOrCreateCommandBuffer(m_Level);
 
         auto beginInfo = vk::CommandBufferBeginInfo()
             .setFlags(vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
