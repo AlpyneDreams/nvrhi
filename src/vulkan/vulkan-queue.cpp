@@ -141,6 +141,15 @@ namespace nvrhi::vulkan
             commandBuffers[i] = commandBuffer->cmdBuf;
             m_CommandBuffersInFlight.push_back(commandBuffer);
 
+            // Track secondary command buffers too
+			for (const auto& pSecondaryCommandList : commandBuffer->referencedSecondaryCommandLists)
+			{
+				CommandList* secondaryCommandList = checked_cast<CommandList*>(pSecondaryCommandList.Get());
+				TrackedCommandBufferPtr secondaryCommandBuffer = secondaryCommandList->getCurrentCmdBuf();
+
+				m_CommandBuffersInFlight.push_back(secondaryCommandBuffer);
+			}
+
             for (const auto& buffer : commandBuffer->referencedStagingBuffers)
             {
                 buffer->lastUseQueue = m_QueueID;
@@ -277,6 +286,20 @@ namespace nvrhi::vulkan
         {
             if (cmd->submissionID <= lastFinishedID)
             {
+                // Retire any embedded secondary command buffers
+                for (const auto& pSecondaryCommandList : cmd->referencedSecondaryCommandLists)
+                {
+                    CommandList* secondaryCommandList = checked_cast<CommandList*>(pSecondaryCommandList.Get());
+                    TrackedCommandBufferPtr secondaryCmd = secondaryCommandList->getCurrentCmdBuf();
+
+                    secondaryCmd->referencedSecondaryCommandLists.clear();
+                    secondaryCmd->referencedResources.clear();
+                    secondaryCmd->referencedStagingBuffers.clear();
+                    secondaryCmd->submissionID = 0;
+                    m_SecondaryCommandBuffersPool.push_back(secondaryCmd);
+                }
+
+                cmd->referencedSecondaryCommandLists.clear();
                 cmd->referencedResources.clear();
                 cmd->referencedStagingBuffers.clear();
                 cmd->submissionID = 0;

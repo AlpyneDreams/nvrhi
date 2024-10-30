@@ -22,6 +22,8 @@
 
 #include "vulkan-backend.h"
 
+#include <nvrhi/common/misc.h>
+
 namespace nvrhi::vulkan
 {
 
@@ -124,6 +126,11 @@ namespace nvrhi::vulkan
         assert(m_CurrentCmdBuf);
 
         m_CurrentCmdBuf->submissionID = submissionID;
+
+        for (auto& commandList : m_CurrentCmdBuf->referencedSecondaryCommandLists)
+        {
+            checked_cast<CommandList*>(commandList.Get())->executed(queue, submissionID);
+        }
 
         const CommandQueue queueID = queue.getQueueID();
         const uint64_t recordingID = m_CurrentCmdBuf->recordingID;

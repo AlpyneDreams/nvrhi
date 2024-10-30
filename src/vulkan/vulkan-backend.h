@@ -210,6 +210,7 @@ namespace nvrhi::vulkan
 
         std::vector<RefCountPtr<IResource>> referencedResources; // to keep them alive
         std::vector<RefCountPtr<Buffer>> referencedStagingBuffers; // to allow synchronous mapBuffer
+        std::vector<RefCountPtr<ICommandList>> referencedSecondaryCommandLists; // to finalize and recycle them
 
         uint64_t recordingID = 0;
         uint64_t submissionID = 0;
