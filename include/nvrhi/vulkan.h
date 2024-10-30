@@ -51,6 +51,7 @@ namespace nvrhi::vulkan
         virtual uint64_t queueGetCompletedInstance(CommandQueue queue) = 0;
         virtual FramebufferHandle createHandleForNativeFramebuffer(VkRenderPass renderPass, 
             VkFramebuffer framebuffer, const FramebufferDesc& desc, bool transferOwnership) = 0;
+        virtual CommandListHandle createSecondaryCommandList(const CommandListParameters& params = CommandListParameters()) = 0;
     };
 
     typedef RefCountPtr<IDevice> DeviceHandle;

@@ -1158,6 +1158,7 @@ namespace nvrhi::vulkan
         uint64_t queueGetCompletedInstance(CommandQueue queue) override;
         FramebufferHandle createHandleForNativeFramebuffer(VkRenderPass renderPass, VkFramebuffer framebuffer,
             const FramebufferDesc& desc, bool transferOwnership) override;
+        CommandListHandle createSecondaryCommandList(const CommandListParameters& params = CommandListParameters());
 
     private:
         VulkanContext m_Context;

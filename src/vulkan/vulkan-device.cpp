@@ -447,6 +447,16 @@ namespace nvrhi::vulkan
         return submissionID;
     }
 
+    CommandListHandle Device::createSecondaryCommandList(const CommandListParameters& params)
+    {
+        if (!m_Queues[uint32_t(params.queueType)])
+            return nullptr;
+
+        CommandList* cmdList = new CommandList(this, m_Context, params, vk::CommandBufferLevel::eSecondary);
+
+        return CommandListHandle::Create(cmdList);
+    }
+
     void Device::getTextureTiling(ITexture* _texture, uint32_t* numTiles, PackedMipDesc* desc, TileShape* tileShape, uint32_t* subresourceTilingsNum, SubresourceTiling* subresourceTilings)
     {
         Texture* texture = checked_cast<Texture*>(_texture);
