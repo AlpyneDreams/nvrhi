@@ -37,6 +37,15 @@ namespace nvrhi::vulkan
 {
     class ICommandList : public nvrhi::ICommandList
     {
+    public:
+        // Additional Vulkan-specific public methods
+        virtual void executeSecondaryCommandLists(ICommandList* const* pCommandLists, size_t numCommandLists) = 0;
+
+        // Front-end for executeSecondaryCommandLists(..., 1) for compatibility and convenience
+        void executeSecondaryCommandList(ICommandList* commandList)
+        {
+            return executeSecondaryCommandLists(&commandList, 1);
+        }
     };
 
     typedef RefCountPtr<ICommandList> CommandListHandle;

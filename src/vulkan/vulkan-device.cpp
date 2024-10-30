@@ -441,7 +441,10 @@ namespace nvrhi::vulkan
 
         for (size_t i = 0; i < numCommandLists; i++)
         {
-            checked_cast<CommandList*>(pCommandLists[i])->executed(queue, submissionID);
+            CommandList* commandList = checked_cast<CommandList*>(pCommandLists[i]);
+			assert(commandList->getLevel() == vk::CommandBufferLevel::ePrimary);
+
+            commandList->executed(queue, submissionID);
         }
 
         return submissionID;
@@ -455,6 +458,27 @@ namespace nvrhi::vulkan
         CommandList* cmdList = new CommandList(this, m_Context, params, vk::CommandBufferLevel::eSecondary);
 
         return CommandListHandle::Create(cmdList);
+    }
+
+    void CommandList::executeSecondaryCommandLists(ICommandList* const* pCommandLists, size_t numCommandLists)
+    {
+        assert(m_CurrentCmdBuf);
+        assert(m_Level == vk::CommandBufferLevel::ePrimary);
+
+        // Reference executed secondary command lists
+        std::vector<vk::CommandBuffer> commandBuffers(numCommandLists);
+        for (size_t i = 0; i < numCommandLists; i++)
+        {
+            CommandList* commandList = checked_cast<CommandList*>(pCommandLists[i]);
+            assert(commandList->getLevel() == vk::CommandBufferLevel::eSecondary);
+
+            TrackedCommandBufferPtr commandBuffer = commandList->getCurrentCmdBuf();
+            commandBuffers[i] = commandBuffer->cmdBuf;
+
+            m_CurrentCmdBuf->referencedSecondaryCommandLists.push_back(commandList);
+        }
+
+        m_CurrentCmdBuf->cmdBuf.executeCommands(commandBuffers);
     }
 
     void Device::getTextureTiling(ITexture* _texture, uint32_t* numTiles, PackedMipDesc* desc, TileShape* tileShape, uint32_t* subresourceTilingsNum, SubresourceTiling* subresourceTilings)

@@ -1266,7 +1266,11 @@ namespace nvrhi::vulkan
         IDevice* getDevice() override { return m_Device; }
         const CommandListParameters& getDesc() override { return m_CommandListParameters; }
 
+        // vulkan::ICommandList implementation
+        void executeSecondaryCommandLists(ICommandList* const* pCommandLists, size_t numCommandLists) override;
+
         TrackedCommandBufferPtr getCurrentCmdBuf() const { return m_CurrentCmdBuf; }
+		vk::CommandBufferLevel getLevel() const { return m_Level; }
 
     private:
         Device* m_Device;
