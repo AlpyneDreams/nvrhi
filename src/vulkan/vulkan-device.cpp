@@ -423,7 +423,7 @@ namespace nvrhi::vulkan
         return Object(m_Queues[uint32_t(queue)]->getVkQueue());
     }
 
-    CommandListHandle Device::createCommandList(const CommandListParameters& params)
+    nvrhi::CommandListHandle Device::createCommandList(const CommandListParameters& params)
     {
         if (!m_Queues[uint32_t(params.queueType)])
             return nullptr;
@@ -433,7 +433,7 @@ namespace nvrhi::vulkan
         return CommandListHandle::Create(cmdList);
     }
     
-    uint64_t Device::executeCommandLists(ICommandList* const* pCommandLists, size_t numCommandLists, CommandQueue executionQueue)
+    uint64_t Device::executeCommandLists(nvrhi::ICommandList* const* pCommandLists, size_t numCommandLists, CommandQueue executionQueue)
     {
         Queue& queue = *m_Queues[uint32_t(executionQueue)];
 

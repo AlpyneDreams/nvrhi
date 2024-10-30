@@ -249,7 +249,7 @@ namespace nvrhi::vulkan
         void addSignalSemaphore(vk::Semaphore semaphore, uint64_t value);
 
         // submits a command buffer to this queue, returns submissionID
-        uint64_t submit(ICommandList* const* ppCmd, size_t numCmd);
+        uint64_t submit(nvrhi::ICommandList* const* ppCmd, size_t numCmd);
 
         void updateTextureTileMappings(ITexture* texture, const TextureTilesMapping* tileMappings, uint32_t numTileMappings);
 
@@ -1137,8 +1137,8 @@ namespace nvrhi::vulkan
         MemoryRequirements getAccelStructMemoryRequirements(rt::IAccelStruct* as) override;
         bool bindAccelStructMemory(rt::IAccelStruct* as, IHeap* heap, uint64_t offset) override;
 
-        CommandListHandle createCommandList(const CommandListParameters& params = CommandListParameters()) override;
-        uint64_t executeCommandLists(ICommandList* const* pCommandLists, size_t numCommandLists, CommandQueue executionQueue = CommandQueue::Graphics) override;
+        nvrhi::CommandListHandle createCommandList(const CommandListParameters& params = CommandListParameters()) override;
+        uint64_t executeCommandLists(nvrhi::ICommandList* const* pCommandLists, size_t numCommandLists, CommandQueue executionQueue = CommandQueue::Graphics) override;
         void queueWaitForCommandList(CommandQueue waitQueue, CommandQueue executionQueue, uint64_t instance) override;
         bool waitForIdle() override;
         void runGarbageCollection() override;
@@ -1174,7 +1174,7 @@ namespace nvrhi::vulkan
         AftermathCrashDumpHelper m_AftermathCrashDumpHelper;
     };
 
-    class CommandList : public RefCounter<ICommandList>
+    class CommandList : public RefCounter<nvrhi::vulkan::ICommandList>
     {
     public:
         // Internal backend methods

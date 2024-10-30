@@ -117,7 +117,7 @@ namespace nvrhi::vulkan
         m_SignalSemaphoreValues.push_back(value);
     }
 
-    uint64_t Queue::submit(ICommandList* const* ppCmd, size_t numCmd)
+    uint64_t Queue::submit(nvrhi::ICommandList* const* ppCmd, size_t numCmd)
     {
         std::vector<vk::PipelineStageFlags> waitStageArray(m_WaitSemaphores.size());
         std::vector<vk::CommandBuffer> commandBuffers(numCmd);

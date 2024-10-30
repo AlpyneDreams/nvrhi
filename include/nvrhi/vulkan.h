@@ -35,6 +35,12 @@ namespace nvrhi
 
 namespace nvrhi::vulkan
 {
+    class ICommandList : public nvrhi::ICommandList
+    {
+    };
+
+    typedef RefCountPtr<ICommandList> CommandListHandle;
+
     class IDevice : public nvrhi::IDevice
     {
     public:
