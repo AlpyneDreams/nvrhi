@@ -648,6 +648,7 @@ namespace nvrhi::validation
             return;
         }
 
+        size_t oldPushConstantSize = m_PipelinePushConstantSize;
         evaluatePushConstantSize(state.pipeline->getDesc().bindingLayouts);
 
         m_CommandList->setGraphicsState(state);
@@ -656,7 +657,10 @@ namespace nvrhi::validation
         m_ComputeStateSet = false;
         m_MeshletStateSet = false;
         m_RayTracingStateSet = false;
-        m_PushConstantsSet = false;
+        m_PushConstantsSet = m_Device->getGraphicsAPI() == GraphicsAPI::VULKAN
+            && m_PushConstantsSet
+            && oldPushConstantSize == m_PipelinePushConstantSize;
+
         m_CurrentGraphicsState = state;
     }
 
