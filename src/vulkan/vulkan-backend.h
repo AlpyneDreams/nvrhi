@@ -273,6 +273,9 @@ namespace nvrhi::vulkan
         CommandQueue getQueueID() const { return m_QueueID; }
         vk::Queue getVkQueue() const { return m_Queue; }
 
+		uint64_t incrementSubmittedID() { return ++m_LastSubmittedID; }
+		uint64_t incrementRecordingID() { return ++m_LastRecordingID; }
+
         bool pollCommandList(uint64_t commandListID);
         bool waitCommandList(uint64_t commandListID, uint64_t timeout);
 
