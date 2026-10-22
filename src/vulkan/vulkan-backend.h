@@ -1329,7 +1329,7 @@ namespace nvrhi::vulkan
 
         TrackedCommandBufferPtr getCurrentCmdBuf() const { return m_CurrentCmdBuf; }
 
-    private:
+    protected:
         Device* m_Device;
         const VulkanContext& m_Context;
 
