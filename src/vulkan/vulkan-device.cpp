@@ -304,6 +304,8 @@ namespace nvrhi::vulkan
             return Object(m_Context.instance);
         case ObjectTypes::Nvrhi_VK_Device:
             return Object(this);
+		case ObjectTypes::Nvrhi_VK_Context:
+			return Object(&m_Context);
         default:
             return nullptr;
         }
